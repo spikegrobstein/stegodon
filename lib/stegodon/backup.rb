@@ -9,6 +9,7 @@ module Stegodon
 
     def initialize(&block)
       run_dsl &block
+      self.backup!
     end
 
     # path to the directory to put backups
@@ -61,10 +62,6 @@ module Stegodon
       cleanup_old_backups
       backup_globals
       backup_table
-    end
-
-    def run!
-
     end
 
   end

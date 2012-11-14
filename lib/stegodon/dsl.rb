@@ -1,4 +1,4 @@
-module Stegadon
+module Stogodon
   class DSL
     attr_accessor :parent
 

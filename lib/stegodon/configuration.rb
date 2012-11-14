@@ -1,4 +1,4 @@
-module Stegadon
+module Stegodon
   class Configuration < Base
 
     @@configurations = {}
