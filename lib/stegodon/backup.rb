@@ -1,3 +1,5 @@
+require 'cocaine'
+
 module Stegodon
   class Backup < Base
     PG_DUMP = '/usr/bin/pg_dump'
