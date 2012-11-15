@@ -1,17 +1,37 @@
 require 'cocaine'
+require 'fileutils'
 
 module Stegodon
   class Backup < Base
-    PG_DUMP = '/usr/bin/pg_dump'
-    PG_DUMPALL = '/usr/bin/pg_dumpall'
+    PG_DUMP = 'pg_dump'
+    PG_DUMPALL = 'pg_dumpall'
 
     dsl_accessor :configuration,
       :database,
-      :location
+      :encoding,
+      :location,
+      :no_unlogged_table_data,
+      :verbose,
+      :pg_dump_bin,
+      :pg_dumpall_bin
 
-    def initialize(&block)
+    attr_accessor :backup_name
+
+    def initialize(backup_name, &block)
+      @backup_name = backup_name
+
+      @pg_dump_bin = PG_DUMP
+      @pg_dumpall_bin = PG_DUMPALL
+
       run_dsl &block
       self.backup!
+    end
+
+    def configuration=(name)
+      puts "fetching configuration: #{ name }"
+      @configuration = Configuration.get(name)
+
+      ap @configuration
     end
 
     # path to the directory to put backups
@@ -20,7 +40,7 @@ module Stegodon
     end
 
     def current_backup_path
-      File.join( self.backup_location, "#{ @db_name }-#{ @backup_type }" )
+      File.join( self.backup_location, "#{ @database }-#{ @backup_name }" )
     end
 
     def old_backup_path
@@ -44,26 +64,37 @@ module Stegodon
     end
 
     def backup_globals
-      line = Cocaine::CommandLine.new( PG_DUMPALL,
+      line = Cocaine::CommandLine.new( @pg_dumpall_bin,
                                        '-g -v -f :dump_file',
                                        :dump_file => current_global_backup_path )
       line.run
     end
 
-    def backup_table
-      line = Cocaine::CommandLine.new( PG_DUMP,
-                                      '-v -E :encoding --no-unlogged-table-data -U :db_user -Fc -f :dump_file :db_name',
+    def backup_database
+      opts = []
+      opts << '-v' if @verbose
+      opts << '-E :encoding' if @encoding
+      opts << '--no-unlogged-table-data' if @no_unlogged_table_data
+      opts << '-U :db_user' if @configuration.username
+      opts << '-Fc'
+      opts << '-f :dump_file' if @location
+      opts << ':database'
+
+      line = Cocaine::CommandLine.new( @pg_dump_bin,
+                                      opts.join(' '),
                                       :encoding => @encoding,
-                                      :db_user => @db_user,
+                                      :db_user => @configuration.username,
                                       :dump_file => current_backup_path,
-                                      :db_name => @db_name )
+                                      :database => @database )
+      puts line.command
+
       line.run
     end
 
     def backup!
       cleanup_old_backups
-      backup_globals
-      backup_table
+      # backup_globals
+      backup_database
     end
 
   end
