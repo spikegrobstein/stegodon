@@ -137,11 +137,4 @@ describe Stegodon::Backup do
     end
   end
 
-  context "#backup!" do
-
-    it "should call #cleanup_old"
-
-    it "should call #backup_database"
-
-  end
 end
