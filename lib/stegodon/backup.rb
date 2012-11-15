@@ -4,7 +4,6 @@ require 'fileutils'
 module Stegodon
   class Backup < Base
     PG_DUMP = 'pg_dump'
-    PG_DUMPALL = 'pg_dumpall'
 
     dsl_accessor :configuration,
       :database,
@@ -12,26 +11,22 @@ module Stegodon
       :location,
       :no_unlogged_table_data,
       :verbose,
-      :pg_dump_bin,
-      :pg_dumpall_bin
+      :pg_dump_bin
 
     attr_accessor :backup_name
 
     def initialize(backup_name, &block)
       @backup_name = backup_name
-
       @pg_dump_bin = PG_DUMP
-      @pg_dumpall_bin = PG_DUMPALL
+      @location = './'
 
-      run_dsl &block
+      super
+
       self.backup!
     end
 
     def configuration=(name)
-      puts "fetching configuration: #{ name }"
       @configuration = Configuration.get(name)
-
-      ap @configuration
     end
 
     # path to the directory to put backups
@@ -47,27 +42,9 @@ module Stegodon
       "#{ current_backup_path }.old"
     end
 
-    def current_global_backup_path
-      "#{ self.current_backup_path }-globals"
-    end
-
-    def old_global_backup_path
-      "#{ current_global_backup_path }.old"
-    end
-
-    def cleanup_old_backups
+    def cleanup_old
       File.exists?(old_backup_path)             && File.unlink(old_backup_path)
       File.exists?(current_backup_path)         && FileUtils.mv(current_backup_path, old_backup_path)
-
-      File.exists?(old_global_backup_path)      && File.unlink(old_global_backup_path)
-      File.exists?(current_global_backup_path)  && FileUtils.mv(current_global_backup_path, old_global_backup_path)
-    end
-
-    def backup_globals
-      line = Cocaine::CommandLine.new( @pg_dumpall_bin,
-                                       '-g -v -f :dump_file',
-                                       :dump_file => current_global_backup_path )
-      line.run
     end
 
     def backup_database
@@ -92,8 +69,7 @@ module Stegodon
     end
 
     def backup!
-      cleanup_old_backups
-      # backup_globals
+      cleanup_old
       backup_database
     end
 
