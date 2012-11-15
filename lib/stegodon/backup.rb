@@ -22,6 +22,10 @@ module Stegodon
 
       super
 
+      unless @configuration
+        @configuration = Stegodon::Configuration.new
+      end
+
       self.backup!
     end
 
@@ -54,7 +58,7 @@ module Stegodon
       opts << '--no-unlogged-table-data' if @no_unlogged_table_data
       opts << '-U :db_user' if @configuration.username
       opts << '-Fc'
-      opts << '-f :dump_file' if @location
+      opts << '-f :dump_file'
       opts << ':database'
 
       line = Cocaine::CommandLine.new( @pg_dump_bin,
@@ -63,7 +67,6 @@ module Stegodon
                                       :db_user => @configuration.username,
                                       :dump_file => current_backup_path,
                                       :database => @database )
-      puts line.command
 
       line.run
     end

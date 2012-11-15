@@ -10,8 +10,8 @@ module Stegodon
       :password,
       :port
 
-    def initialize(name, &block)
-      @@configurations[name] = self
+    def initialize(name=nil, &block)
+      @@configurations[name] = self unless name.nil?
       super
     end
 

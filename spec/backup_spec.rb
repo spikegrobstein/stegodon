@@ -9,6 +9,7 @@ describe Stegodon::Backup do
 
   before do
     Stegodon::Backup.any_instance.stub(:backup! => true)
+    Cocaine::CommandLine.any_instance.stub(:run => true)
   end
 
   context "initializing" do
@@ -81,15 +82,57 @@ describe Stegodon::Backup do
 
     context "when calling the command via cocaine" do
 
-      it "should include -v if verbose is set to true"
+      def cocaine_should_contain(arg, state=true)
+        Cocaine::CommandLine.should_receive(:new) do |a|
+          (!!arg[1].match(/\b#{arg}\b/)).should == state
+        end.and_call_original
+      end
 
-      it "should not include -v if verbose is set to false"
+      it "should include -v if verbose is set to true" do
 
-      it "should include :encoding if @encoding is set"
+        cocaine_should_contain '-v'
 
-      it "should include :db_user if @configuration.username is used"
+        Stegodon::Backup.new(:test) do
+          verbose true
+        end.backup_database
 
-      it "should include :dump_file if @location is set"
+      end
+
+      it "should not include -v if verbose is set to false" do
+        cocaine_should_contain '-v', false
+
+        Stegodon::Backup.new(:test) do
+          verbose false
+        end.backup_database
+      end
+
+      it "should include :encoding if @encoding is set" do
+        cocaine_should_contain ':encoding'
+
+        Stegodon::Backup.new(:test) do
+          encoding 'SQL_ASCII'
+        end.backup_database
+      end
+
+      it "should include :db_user if @configuration.username is used" do
+        cocaine_should_contain ':db_user'
+
+        Stegodon::Configuration.new(:default) do
+          username 'spike'
+        end
+
+        Stegodon::Backup.new(:test) do
+          configuration :default
+        end.backup_database
+      end
+
+      it "should include --no-unlogged-table-data if no_unlogged_table_data is set" do
+        cocaine_should_contain '--no-unlogged-table-data'
+
+        Stegodon::Backup.new(:test) do
+          no_unlogged_table_data true
+        end.backup_database
+      end
 
     end
   end
