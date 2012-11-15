@@ -13,7 +13,7 @@ module Stegodon
       run_dsl &block
     end
 
-    def get(name)
+    def self.get(name)
       @@configurations[name]
     end
 
