@@ -18,6 +18,7 @@ module Stegodon
     def initialize(backup_name, &block)
       @backup_name = backup_name
       @pg_dump_bin = PG_DUMP
+
       @location = './'
 
       super
