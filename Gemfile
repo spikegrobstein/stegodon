@@ -5,3 +5,4 @@ gemspec
 
 gem 'rspec'
 gem 'awesome_print'
+gem 'fakefs', :require => "fakefs/safe"

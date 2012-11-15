@@ -2,6 +2,9 @@ require 'rubygems'
 require 'bundler/setup'
 
 require 'awesome_print'
+require 'fakefs/safe'
+require 'fakefs/spec_helpers'
+
 
 $: << File.dirname(__FILE__) + '/../lib'
 
