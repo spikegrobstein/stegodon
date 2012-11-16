@@ -1,4 +1,4 @@
-require 'cocaine'
+require 'benzo'
 require 'fileutils'
 
 module Stegodon

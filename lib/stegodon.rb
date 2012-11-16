@@ -1,7 +1,5 @@
 require "stegodon/version"
 
-require 'benzo'
-
 require 'stegodon/dsl'
 require 'stegodon/base'
 
