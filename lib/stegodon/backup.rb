@@ -1,6 +1,3 @@
-require 'benzo'
-require 'fileutils'
-
 module Stegodon
   class Backup < Base
     PG_DUMP = 'pg_dump'

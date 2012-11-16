@@ -1,5 +1,8 @@
 require "stegodon/version"
 
+require 'benzo'
+require 'fileutils'
+
 require 'stegodon/dsl'
 require 'stegodon/base'
 
