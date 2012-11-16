@@ -1,3 +1,5 @@
+require 'awesome_print'
+
 module Stegodon
   class Backup < Base
     PG_DUMP = 'pg_dump'
