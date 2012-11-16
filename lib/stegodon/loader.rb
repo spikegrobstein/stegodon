@@ -37,6 +37,8 @@ module Stegodon
     end
 
     def load_globals
+      return unless @globals_path
+
       line = Benzo.line( @psql_bin,
                       '-f :globalfile' => @globals_path
                     )
