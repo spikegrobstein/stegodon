@@ -53,21 +53,15 @@ module Stegodon
     end
 
     def backup_database
-      opts = []
-      opts << '-v' if @verbose
-      opts << '-E :encoding' if @encoding
-      opts << '--no-unlogged-table-data' if @no_unlogged_table_data
-      opts << '-U :db_user' if @configuration.username
-      opts << '-Fc'
-      opts << '-f :dump_file'
-      opts << ':database'
-
-      line = Cocaine::CommandLine.new( @pg_dump_bin,
-                                      opts.join(' '),
-                                      :encoding => @encoding,
-                                      :db_user => @configuration.username,
-                                      :dump_file => current_backup_path,
-                                      :database => @database )
+      line = Benzo.line( @pg_dump_bin,
+                       '-v'                       => @verbose,
+                       '-E :encoding'             => @encoding,
+                       '--no-unlogged-table-data' => @no_unlogged_table_data,
+                       '-U :db_user'              => @configuration.username,
+                       '-Fc'                      => true,
+                       '-f :dump_file'            => current_backup_path,
+                       ':database'                => @database
+                       )
 
       line.run
     end
