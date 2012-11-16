@@ -28,9 +28,12 @@ module Stegodon
     end
 
     def backup_globals
-      line = Cocaine::CommandLine.new( @pg_dumpall_bin,
-                                       '-g -v -f :dump_file',
-                                       :dump_file => current_global_backup_path )
+      line = Benzo.line( @pg_dumpall_bin,
+                       '-g' => true,
+                       '-v' => true,
+                       '-f :dump_file' => current_global_backup_path
+                       )
+
       line.run
     end
 
