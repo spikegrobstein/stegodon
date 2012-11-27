@@ -42,7 +42,9 @@ module Stegodon
       return unless @globals_path
 
       line = Benzo.line( @psql_bin,
-                      '-f :globalfile' => @globals_path
+                      '-f :globalfile' => @globals_path,
+                      '-U :user' => @owner,
+                      ':db_name' => @database
                     )
 
       line.run
@@ -83,8 +85,8 @@ module Stegodon
 
     def load!
       drop_database
-      load_globals
       create_database
+      load_globals
       load_into_postgres
     end
 
