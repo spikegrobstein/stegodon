@@ -9,6 +9,8 @@ module Stegodon
     dsl_accessor :configuration,
       :database,
       :encoding,
+      :collate,
+      :ctype,
       :owner,
       :template,
       :globals_path,
@@ -60,6 +62,8 @@ module Stegodon
                        '-E :encoding' => @encoding,
                        '-O :owner' => @owner,
                        '-T :template' => @template,
+                       '--lc-collate :collate' => @collate,
+                       '--lc-ctype :ctype' => @ctype,
                        ':db_name' => @database
                        )
 
