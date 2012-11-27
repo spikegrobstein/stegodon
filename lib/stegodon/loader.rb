@@ -38,6 +38,10 @@ module Stegodon
       self.load!
     end
 
+    def verbose=(is_verbose=true)
+      @verbose = is_verbose
+    end
+
     def load_globals
       return unless @globals_path
 
